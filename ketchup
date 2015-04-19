@@ -1,7 +1,7 @@
 #!/usr/bin/python
 #
 # ketchup-1.1-beta2
-#    http://github.com/psomas/ketchup 
+#    http://github.com/psomas/ketchup
 #    git://github.com/psomas/ketchup.git
 #
 # Orignial code by:
@@ -12,7 +12,7 @@
 #
 # Now maintained by:
 #    Stratos Psomadakis <psomas@cslab.ece.ntua.gr>
-# 
+#
 # Contributors:
 #    Baruch Even <baruch@debian.org>
 #    Pavel Machek <pavel@ucw.cz>
@@ -130,11 +130,11 @@ def tree(ver):
         sys.exit(-1)
 
     # linux versions >=3.0 use only the first digit to define the 'tree'
-    ret = int(t.group(2)) 
+    ret = int(t.group(2))
     if ret >= 3:
         return ret
 
-    # 2.x linux trees 
+    # 2.x linux trees
     return float(t.group(1))
 
 def rev(ver):
@@ -149,7 +149,7 @@ def rev(ver):
 
     # if there's no match, the version is invalid
     try: r = int(r.group(1))
-    except: 
+    except:
         error("Invalid tree version!")
         sys.exit(-1)
 
@@ -160,7 +160,7 @@ def rev(ver):
         if t == 2:
             t = 2.6
         r = last_minor(t)
-        
+
     return r
 
 def pre(ver):
@@ -179,9 +179,9 @@ def post(ver):
     if tree(ver) >= 3:
         p = re.match(r'\d+\.\d+\.(\d+)', ver)
     # 2.x trees
-    else: 
+    else:
         p = re.match(r'\d+\.\d+\.\d+\.(\d+)', ver)
-    
+
     try: return p.group(1)
     except: return None
 
@@ -192,7 +192,7 @@ def prenum(ver):
     # 2.x trees
     else:
         p = re.match(r'\d+\.\d+\.\d+(\.\d+)?-rc(\d+)', ver)
-    
+
     try: return p.group(2)
     except: return None
 
@@ -232,7 +232,7 @@ def forkname(ver):
     else:
         f = re.match(r'\d+\.\d+\.\d+(\.\d+)?(-(rc|pre)\d+)?(-([a-zA-Z]+)(-)?(\d+)?)?',
             ver)
-    
+
     try: return f.group(5)
     except: return None
 
@@ -270,7 +270,7 @@ def get_ver(makefile):
     for l in m.readlines():
         for p in parts:
             try: part[p] = re.match(r'%s\s*=\s*(\S+)' % p, l).group(1)
-            except:            
+            except:
                 # get any other extra versions defined in the makefile (except
                 # kernel version)
                 v = re.match(r'(\S+VERSION)\s*=\s*(\S+)', l)
@@ -279,7 +279,7 @@ def get_ver(makefile):
                         extra[v.group(1)] = v.group(2)
                 except:
                     pass
-            
+
     if part['VERSION'] >= '3'and part['SUBLEVEL'] == '0':
         version = "%s.%s" % tuple([part[p] for p in parts[:2]])
     else:
@@ -287,7 +287,7 @@ def get_ver(makefile):
 
     for v in extra.keys():
         version += extra.get(v, "")
-    
+
     version += get_localversion()
 
     return version
@@ -358,7 +358,7 @@ def latest_dir_lt(url, pat):
         'kernel_url': kernel_url,
         'revbase' : revbase(lv)
     }
-    
+
     url = url % s
     for l in urllib.urlopen(url).readlines():
         m = re.search('"%s"' % pat, l)
@@ -373,7 +373,7 @@ def latest_dir_lt(url, pat):
 def find_www(url, pat, grp):
     """Parse the page the url is pointing to and fetch the matched items"""
     p = []
-    
+
     for l in urllib.urlopen(url).readlines():
         m = re.search('"%s"' % pat, l)
         if m: p.append(m.group(grp))
@@ -387,16 +387,16 @@ def latest_dir(url, pat):
         'kernel_url': kernel_url,
         'full_tree': latest_major()
     }
-    
+
     p = find_www(url % s, pat, 1)
     if not p: return None
 
     p.sort(compare_ver)
     return p[-1]
 
-def find_majors(): 
+def find_majors():
     return find_www(kernel_url, '.*v(\d+\.\d+).*', 1)
-   
+
 def latest_major():
     global lmajor
     if lmajor == None:
@@ -457,7 +457,7 @@ def find_info(ver):
             if ver != v[0](os.path.dirname(v[1])):
                 error("%s can only be applied to specific kernel versions" % s)
                 sys.exit(-1)
-            
+
     return version_info[s]
 
 def full_tree(ver):
@@ -470,7 +470,7 @@ def full_tree(ver):
         error("Invalid tree version!")
     return t.group(0)
 
-    
+
 def version_urls(ver):
     """ Return the URL for the patch associated with the specified version """
     i = find_info(ver)[1]
@@ -491,7 +491,7 @@ def version_urls(ver):
     l = []
     for e in i:
         l.append(e % v)
-    
+
     return l
 
 def patch_path(ver):
@@ -499,7 +499,7 @@ def patch_path(ver):
     if re.search(r'\d+\.\d+', patch_name) == None:
         suf = re.search(r'\.tar\.(gz|(bz(\d+)?))', patch_name).group(0)
         patch_name = re.sub(r'(\.tar\.(gz|(bz(\d+)?)))', "-%s%s" % (ver, suf), patch_name)
-    
+
     return os.path.join(archive, patch_name)
 
 def download(url, f):
@@ -656,7 +656,7 @@ def apply_quilt(ver, reverse = 0):
             os.chdir(old)
             os.system("rm -rf patches")
             sys.exit(-1)
- 
+
         os.system("mv broken-out/*.patch ./")
 
         os.chdir(old)
@@ -737,10 +737,10 @@ def install_nearest(ver):
     t = tree(ver)
     if t == 2.4:
         tarballs = glob.glob(archive + "/linux-%s.*.tar.bz2" % t)
-    else: 
+    else:
         tarballs = glob.glob(archive + "/linux-2.6.*.tar.bz2")
         tarballs += glob.glob(archive + "/linux-[3-9].*.tar.bz2")
-    
+
     list = []
     for f in tarballs:
         m = re.match(r'.*/linux-(.*).tar.bz2$', f)
@@ -793,7 +793,7 @@ def find_ver(ver):
     if ver in version_info.keys():
         v = version_info[ver]
 
-        d = v[1] 
+        d = v[1]
         if type(d) is not type([]):
             d = [ d ]
 
@@ -826,12 +826,12 @@ def transform(a, b):
 
         if post(a) and (post(a) != post(b) or rev(a) != rev(b)):
             apply_patch(prebase(a), 1)
-        
+
         ra, rb = rev(a), rev(b)
         ta, tb = tree(a), tree(b)
         if tree(revbase(b)) != tb:
             tb = tree(revbase(b))
-    
+
         if ta == tb and ra > rb:
             for r in range(ra, rb, -1):
                 apply_patch("%s.%s" % (ta, r), -1)
@@ -846,7 +846,7 @@ def transform(a, b):
 
             if t >= 3:
                 t += .0
-            
+
             for r in range(last_minor(t), rb, -1):
                 apply_patch("%s.%s" % (tb, r), -1)
         if tb > ta:
