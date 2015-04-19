@@ -483,7 +483,7 @@ def version_urls(ver):
 
     v = {
         'full': ver,
-        'tree': tree(ver) + .0,
+        'tree': str(tree(ver)) + ".x",
         'base': base(ver),
         'prebase': prebase(ver),
         'fork': fork(ver),
