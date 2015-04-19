@@ -291,8 +291,7 @@ def get_ver(makefile):
     for v in extra.keys():
         version += extra.get(v, "")
 
-# DLE: comment to bypass my local changes
-#    version += get_localversion()
+    version += get_localversion()
 
     return version
 
