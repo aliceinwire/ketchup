@@ -124,7 +124,7 @@ compress_types = {".bz2" : "bzcat", ".gz" : "gzcat", ".xz" : "xzcat", "" : "cat"
 
 def tree(ver):
     # every version must start with x.y, exit otherwise
-    t = re.match(r'((\d+)\.\d+)', ver)
+    t = re.match(r'((\d+)\.(\d+|x))', ver)
     if t == None:
         error("Invalid tree version!")
         sys.exit(-1)
@@ -142,7 +142,7 @@ def rev(ver):
 
     # 3.x trees
     if tree(ver) >= 3:
-        r = re.match(r'\d+\.(\d+)', ver)
+        r = re.match(r'(\d+)\.(\d+|x)', ver)
     # 2.x trees
     else:
         r = re.match(r'\d+\.\d+\.(\d+)', ver)
@@ -288,7 +288,8 @@ def get_ver(makefile):
     for v in extra.keys():
         version += extra.get(v, "")
 
-    version += get_localversion()
+# DLE: comment to bypass my local changes
+#    version += get_localversion()
 
     return version
 
@@ -395,7 +396,7 @@ def latest_dir(url, pat):
     return p[-1]
 
 def find_majors():
-    return find_www(kernel_url, '.*v(\d+\.\d+).*', 1)
+    return find_www(kernel_url, '.*v(\d+\.(\d+|x)).*', 1)
 
 def latest_major():
     global lmajor
