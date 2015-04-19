@@ -142,16 +142,19 @@ def rev(ver):
 
     # 3.x trees
     if tree(ver) >= 3:
-        r = re.match(r'(\d+)\.(\d+|x)', ver)
+        r = re.match(r'\d+\.(\d+|x)', ver)
     # 2.x trees
     else:
         r = re.match(r'\d+\.\d+\.(\d+)', ver)
 
     # if there's no match, the version is invalid
-    try: r = int(r.group(1))
-    except:
-        error("Invalid tree version!")
-        sys.exit(-1)
+    if r.group(1) == 'x':
+        return r.group(1)
+    else:
+        try: r = int(r.group(1))
+        except:
+            error("Invalid tree version!")
+            sys.exit(-1)
 
     #for -rc versions return the previous stable version
     if p: r = r - 1
