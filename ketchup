@@ -418,7 +418,7 @@ def last_minor(t):
     if maj not in minors:
         url = kernel_url + ("/v%s" % maj)
 
-        p = map(int, find_www(url, ".*linux-%s\.(\d+)\.tar\.bz2" % t, 1))
+        p = map(int, find_www(url, ".*linux-%s\.(\d+)\.tar\.(bz2|xz|gz)" % t, 1))
         p.sort()
 
         if p:
@@ -739,14 +739,14 @@ def untar(tarfile):
 def install_nearest(ver):
     t = tree(ver)
     if t == 2.4:
-        tarballs = glob.glob(archive + "/linux-%s.*.tar.bz2" % t)
+        tarballs = glob.glob(archive + "/linux-%s.*.tar.(bz2|xz)" % t)
     else:
-        tarballs = glob.glob(archive + "/linux-2.6.*.tar.bz2")
-        tarballs += glob.glob(archive + "/linux-[3-9].*.tar.bz2")
+        tarballs = glob.glob(archive + "/linux-2.6.*.tar.(bz2|xz)")
+        tarballs += glob.glob(archive + "/linux-[3-9].*.tar.(bz2|xz)")
 
     list = []
     for f in tarballs:
-        m = re.match(r'.*/linux-(.*).tar.bz2$', f)
+        m = re.match(r'.*/linux-(.*).tar.(bz2|xz)$', f)
         v = m.group(1)
         dt = tree(v) - tree(ver)
         # if we're 2 'major' trees apart, just get the full tarball
@@ -769,7 +769,7 @@ def install_nearest(ver):
         t += .0
 
     if not list or (options["full-tarball"] and list[0][0]):
-        f = "linux-%s.tar.bz2" % ver
+        f = "linux-%s.tar.xz" % ver
         url = "%s/v%s/%s" % (kernel_url, t, f)
         url_longterm = "%s/v%s/longterm/v%s/%s" % (kernel_url, t, revbase(ver), f)
         f = archive + "/" + f
@@ -898,18 +898,18 @@ version_info = {
                  r'patch-(.*?).bz2',
                  1, "2.4 kernel series"),
     'linux-next': (latest_dir,
-                 "%(kernel_url)s" + "/v2.6/next" + "/patch-v%(prebase)s%(fork)s.bz2",
-                 r'patch-v(.*?).bz2',
+                 "%(kernel_url)s" + "/v2.6/next" + "/patch-v%(prebase)s%(fork)s.xz",
+                 r'patch-v(.*?).xz',
                  1, "linux-next tree"),
     'linux-rc': (latest_dir,
-                 [ "%(kernel_url)s" + "/v%(tree)s" + "/testing/patch-%(prebase)s.bz2",
-                 "%(kernel_url)s" + "/v%(tree)s" + "/testing/v%(full_tree)s/patch-%(prebase)s.bz2"],
-                 r'patch-(.*?).bz2',
+                 [ "%(kernel_url)s" + "/v%(tree)s" + "/testing/patch-%(prebase)s.xz",
+                 "%(kernel_url)s" + "/v%(tree)s" + "/testing/v%(full_tree)s/patch-%(prebase)s.xz"],
+                 r'patch-(.*?).xz',
                  1, "current stable kernel series prereleases"),
     'linux-lt': (latest_dir_lt,
-                 ["%(kernel_url)s" + "/v%(tree)s/longterm/v%(revbase)s/patch-%(prebase)s.bz2",
-                 "%(kernel_url)s" + "/v%(tree)s" + "/patch-%(prebase)s.bz2"],
-                 r'patch-(.*?).bz2',
+                 ["%(kernel_url)s" + "/v%(tree)s/longterm/v%(revbase)s/patch-%(prebase)s.xz",
+                 "%(kernel_url)s" + "/v%(tree)s" + "/patch-%(prebase)s.xz"],
+                 r'patch-(.*?).xz',
                  1, "longterm kernel series - update (only) to newer longterm stable releases"),
     'linux': (latest_dir,
                  ["%(kernel_url)s" + "/v%(tree)s" + "/patch-%(prebase)s.xz",
